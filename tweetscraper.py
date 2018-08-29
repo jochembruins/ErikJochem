@@ -2,24 +2,34 @@ from TwitterAPI import TwitterAPI
 import json
 import configparser
 
-config = configparser.RawConfigParser()
-config.read('config.ini')
+def getTweets(SEARCH_TERM):
 
-SEARCH_TERM = 'geertwilderspvv'
+	config = configparser.RawConfigParser()
+	config.read('config.ini')
 
-api = TwitterAPI(config.get('DEFAULT', 'api_key'),
-                 config.get('DEFAULT', 'api_secret_key'),
-                 config.get('DEFAULT', 'access_token'),
-                 config.get('DEFAULT', 'access_token_secret'))
+	# SEARCH_TERM = 'geertwilderspvv'
 
-r = api.request('statuses/user_timeline', {'screen_name': SEARCH_TERM, 'count': 3200})
+	api = TwitterAPI(config.get('DEFAULT', 'api_key'),
+	                 config.get('DEFAULT', 'api_secret_key'),
+	                 config.get('DEFAULT', 'access_token'),
+	                 config.get('DEFAULT', 'access_token_secret'))
 
-tweets = []
+	tweets = []
 
-for item in r:
-	tweets.append(item)
+	for page in range(1):
 
-with open('geert.json', 'w') as outfile:
-    json.dump(tweets, outfile)
+		r = api.request('statuses/user_timeline', {'screen_name': SEARCH_TERM, 'count': 200, 'page' : page + 1})
 
-# print('\nQUOTA: %s' % r.get_quota())
+		for item in r:
+			tweet = {}
+			tweet['id'] = item['id']
+			tweet['created_at'] = item['created_at']
+			tweet['text'] = item['text']
+			tweets.append(tweet)
+
+	# print(len(tweets))
+
+	collection = json.dumps({ 'member': SEARCH_TERM, 'tweets': tweets})
+
+	with open('tweetcollection/' + SEARCH_TERM + '.json', 'w') as outfile:
+		json.dump(json.loads(collection), outfile)
