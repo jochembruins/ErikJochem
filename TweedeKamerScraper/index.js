@@ -29,23 +29,34 @@ function getMembers(){
 			member.leeftijd = new Date(member.leeftijd); 
 
 			// add url
-			member.url = url[i]
+			member.url = url[i];
 			getTwitter(member);
 		});
 	})
 };	
 
 function getTwitter (member){
+	console.log('twitter');
 	var link;
 	x(member.url, 'section', [{
 	  twitter: '.list-social .___twitter@href'
 	}])(function(err, obj) {
+		console.log(obj);
 		link = obj[0].twitter;
 		member.twitter = link;
 	});
 	members.push(member);
 };
 
-setTimeout(function(){fs.writeFile('leden.json', JSON.stringify(members))}, 30000);
+
+function writeFile () {
+	console.log(members)
+	fs.writeFile('leden.json', JSON.stringify(members), (err) => {
+    if (err) throw err;
+    console.log('The file has been saved!');
+  })
+}
+
+setTimeout(function() {writeFile()}, 60000);
 
 
