@@ -14,10 +14,12 @@ api = TwitterAPI(config.get('DEFAULT', 'api_key'),
 
 r = api.request('statuses/user_timeline', {'screen_name': SEARCH_TERM, 'count': 3200})
 
-# with open('geert.json', 'w') as outfile
+tweets = []
 
 for item in r:
-    # json.dump(item if 'text' in item else item, outfile)
-    print(item if 'text' in item else item)
+	tweets.append(item)
+
+with open('geert.json', 'w') as outfile:
+    json.dump(tweets, outfile)
 
 # print('\nQUOTA: %s' % r.get_quota())
